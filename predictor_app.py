@@ -75,23 +75,32 @@ def render_predictor():
                     
                     try:
                         prob = model.predict_proba(features)[0]
-                        confidence = prob[1] * 100
+                        approval_prob = prob[1]
+                        confidence = approval_prob * 100
                     except:
+                        approval_prob = 1.0 if prediction == 1 else 0.0
                         confidence = 100.0 if prediction == 1 else 0.0
                     
                     st.markdown("---")
                     res_col1, res_col2 = st.columns([1, 2])
                     
-                    if prediction == 1:
-                        res_col1.success("### 🎉 Approved")
-                        res_col2.info(f"**Approval Confidence:** {confidence:.1f}%")
-                        st.progress(confidence / 100.0)
-                        st.write("The model categorizes this profile as **Low Risk**. The application meets approval criteria based on strong stability and credit metrics.")
+                    if approval_prob >= 0.75:
+                        risk_level = "🟢 Low Risk"
+                        risk_description = "Strong approval likelihood. The applicant shows stable credit and financial indicators with low risk for loan default."
+                        status_fn = res_col1.success
+                    elif approval_prob >= 0.40:
+                        risk_level = "🟡 Medium Risk"
+                        risk_description = "Moderate approval likelihood. The profile may require additional review because some credit or debt indicators are borderline."
+                        status_fn = res_col1.warning
                     else:
-                        res_col1.error("### ⚠️ Rejected")
-                        res_col2.warning(f"**Approval Likelihood:** {confidence:.1f}%")
-                        st.progress(confidence / 100.0)
-                        st.write("The model categorizes this profile as **High Risk**. The application is likely to be rejected due to high debt-to-income or derogatory marks.")
-                        
+                        risk_level = "🔴 High Risk"
+                        risk_description = "Low approval likelihood. The applicant has higher risk factors such as elevated debt-to-income ratio or derogatory marks."
+                        status_fn = res_col1.error
+                    
+                    status_fn(f"### {risk_level}")
+                    res_col2.info(f"**Approval Confidence:** {confidence:.1f}%")
+                    st.progress(confidence / 100.0)
+                    st.write(risk_description)
+                    
                 except Exception as e:
                     st.error(f"An error occurred during prediction: {e}")
