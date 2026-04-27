@@ -5,7 +5,7 @@ import joblib
 @st.cache_resource
 def load_model():
     try:
-        model = joblib.load("model/loanApproved_model.pkl")
+        model = joblib.load("model/loanApproved_model.pkl") #loading model
         return model
     except Exception as e:
         return None
