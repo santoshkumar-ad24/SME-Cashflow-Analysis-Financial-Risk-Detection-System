@@ -1,109 +1,118 @@
-# SME Cashflow Analysis & Financial Risk Detection System
+# 💸 FinTech SME: Intelligent Financial Risk & Cashflow Assessment System
 
-## 🚀 Overview
-The **SME Financial Risk Detection System** is an enterprise-grade web application designed to analyze company cash flow, assess financial health, and accurately predict loan approval risks. 
+![UI/UX Theme](https://img.shields.io/badge/UI%2FUX-Dark%20Glassmorphism-06b6d4?style=flat-square)
+![Machine Learning](https://img.shields.io/badge/ML%20Model-Random%20Forest%20(85.2%25)-10b981?style=flat-square)
+![Stack](https://img.shields.io/badge/Stack-React%20%7C%20Flask-3b82f6?style=flat-square)
 
-Originally built as a monolithic Streamlit application, the system has been entirely refactored into a modern, highly scalable **React + Flask + MongoDB** architecture. It is designed to service both small-to-medium enterprises (SMEs) and multi-billion-dollar multinational corporations using an intelligent Random Forest Machine Learning model.
+FinTech SME is an industrial-grade, full-stack financial analytics platform designed to evaluate Small and Medium-sized Enterprises (SMEs) for credit risk, loan eligibility, and financial health. By combining advanced Machine Learning algorithms with a stunning, highly interactive dashboard, the system empowers financial analysts and loan officers to make data-driven, confident decisions instantly.
 
-## 🌟 Key Features
+---
 
-1. **MERN-Style Architecture (React + Flask + MongoDB)**
-   - A highly responsive Single Page Application (SPA) built with React and Vite.
-   - A robust Python Flask backend REST API handling all mathematical modeling and machine learning inference.
-   - Historical financial dataset storage migrated to a NoSQL **MongoDB** database for rapid querying.
+## ✨ Key Features
 
-2. **Annual Report Analysis (AI-Powered)**
-   - Users can drag and drop raw corporate annual reports (`.pdf` or `.csv`).
-   - The system utilizes `PyPDF2` and custom Regular Expressions to intelligently parse financial metrics directly from text, automatically recognizing magnitude strings (e.g., "Revenue: 2.5 million", "Debt: $1B").
-   - Extracted data instantly populates an advanced stock-trading-style dashboard featuring 5 key visualizations (Recharts):
-     - Quarterly Revenue & Net Income Trend (Line Chart)
-     - Estimated Revenue Breakdown (Pie Chart)
-     - Balance Sheet Summary (Pie Chart)
-     - Profitability Analysis (Bar Chart)
-     - Cash Flow Statement Summary (Bar Chart)
+- **🧠 AI Risk Predictor:** Enter an applicant's financial and credit metrics to instantly calculate an approval confidence score using a pre-trained Random Forest model (85.19% Accuracy, 0.93 AUC).
+- **📄 Automated Annual Report Analysis:** Drag-and-drop PDF or CSV annual reports to automatically extract key financial data (NLP) and visualize the enterprise's health against safe industry benchmarks via Radar and Correlation charts.
+- **💰 Cashflow Analytics Dashboard:** Deep-dive into massive transaction datasets with interactive Time-Series, Pie, and Bar charts to identify spending patterns and liquidity trends.
+- **📊 Model Analytics Engine:** Transparently view model performance, ROC curves, feature engineering pipelines, and comparisons across various ML models (XGBoost, SVC, Logistic Regression).
+- **🎨 Premium UI/UX:** Features a dynamic Light/Dark mode toggle, custom glassmorphism aesthetics, fluid micro-animations, and responsive layouts.
 
-3. **Enterprise Machine Learning Normalization**
-   - The core AI model (`RandomForestClassifier`) evaluates loan applicants based on Stability Score, Debt-to-Income Ratio, and Credit History.
-   - **Corporate Asset-Backing Adjustment:** Because the model was trained on SME data, the backend features a specialized "normalization layer." If a massive enterprise report (e.g., $75 Million revenue) is processed, the API dynamically discounts asset-backed corporate debt and mathematically scales the data down to the ML model's baseline, guaranteeing flawless risk predictions across all company sizes without breaking the model's bounds.
+---
 
-4. **Professional UI/UX Design System**
-   - Clean, state-of-the-art "White and Cyan" aesthetic utilizing deep shadows, glassmorphism, and dynamic hover animations.
-   - Fully responsive grid layouts tailored for modern web analytics.
+## 🎯 Use Case Scenarios
 
-## 🛠️ Technology Stack
+### Scenario 1: Instant Loan Origination Decisioning
+> **The Problem:** A loan officer receives a credit application from a local SME. Manually cross-referencing income, debt, and derogatory marks takes hours and is prone to human bias.
+> 
+> **The Solution:** The officer uses the **AI Risk Predictor**. By inputting the SME's metrics, the Random Forest model instantly categorizes the application as *Low, Medium, or High Risk*, providing a precise "Approval Confidence" percentage via a dynamic gauge chart.
 
-**Frontend:**
-- **React.js** (via Vite)
-- **React Router** (Client-side routing)
-- **Recharts** (Enterprise Data Visualization)
-- **Lucide React** (Vector Iconography)
-- **Axios** (API communication)
-- **Vanilla CSS** (Custom Design System)
+### Scenario 2: Rapid Enterprise Health Audits
+> **The Problem:** A financial analyst is tasked with reviewing a 50-page annual report to determine an enterprise's quarter-over-quarter growth and asset backing.
+> 
+> **The Solution:** The analyst uploads the document to the **Annual Report Analysis** dashboard. The system extracts net income, total assets, and cash flow data, immediately generating a Radar Chart that visually compares the SME against safe industry benchmarks.
 
-**Backend:**
-- **Python 3.x**
-- **Flask** & **Flask-CORS** (RESTful API Server)
-- **Pandas** & **NumPy** (Data processing and Feature Engineering)
-- **Scikit-Learn** & **Joblib** (Machine Learning Model Inference)
-- **PyPDF2** (PDF Document Parsing)
-- **PyMongo** (MongoDB Database connector)
+### Scenario 3: Fraud & Anomaly Detection in Cashflow
+> **The Problem:** A risk manager needs to ensure an SME isn't misusing funds or experiencing hidden liquidity crunches before approving a credit line extension.
+> 
+> **The Solution:** Using the **Cashflow** tab, the manager filters transactions by date and channel. Visualizing the data reveals anomalous spikes in B2B transfers or unexpected net cashflow deficits, prompting a closer review.
 
-**Database:**
-- **MongoDB** (Local instance: `mongodb://localhost:27017/`)
+---
 
-## 📁 Project Structure
+## 🏗️ Architecture & Tech Stack
 
-```text
-ml_project_final_sme-fwd/
-│
-├── backend/
-│   ├── app.py                  # Main Flask API Server
-│   └── models/                 # Serialized ML Models (.pkl)
-│
-├── frontend/
-│   ├── src/
-│   │   ├── components/         # Reusable React UI Components
-│   │   ├── pages/              # Main Views (Dashboard, ReportAnalysis, Cashflow)
-│   │   ├── App.jsx             # React Router Configuration
-│   │   └── index.css           # Global Design System Variables
-│   ├── package.json
-│   └── vite.config.js
-│
-├── datasets/                   # Raw historical CSV data
-├── migrate_to_mongo.py         # ETL script for migrating CSVs to MongoDB
-└── README.md                   # Project Documentation
-```
+### Frontend (Client-Side)
+- **Framework:** React.js (Vite)
+- **Routing:** React Router v6
+- **Data Visualization:** Recharts (Area, Bar, Pie, Radar, Scatter)
+- **Styling:** Vanilla CSS (CSS Variables, Glassmorphism, Custom Light/Dark themes)
+- **Icons:** Lucide React
 
-## ⚙️ Installation & Setup
+### Backend (Server-Side / ML)
+- **Framework:** Flask (Python) / RESTful API
+- **Machine Learning:** Scikit-Learn, Pandas, NumPy
+- **Winning Model:** Random Forest (`n_estimators=200`, `class_weight='balanced'`)
 
-### 1. Database Setup
-Ensure you have **MongoDB Community Server** installed and running locally on port `27017`.
-To migrate the historical `.csv` datasets into MongoDB, run:
-```bash
-python migrate_to_mongo.py
-```
+---
 
-### 2. Backend Setup
-Navigate to the `backend` directory, install the Python dependencies, and start the Flask server:
+## 🔒 Security & Configuration (Best Practices)
+
+To maintain the security and integrity of the system, all sensitive configurations are hidden from the source code. **Never commit your `.env` files to version control.**
+
+1. **Environment Variables:**
+   Create a `.env` file in your `backend/` directory for sensitive credentials:
+   ```env
+   # Example .env (Backend)
+   FLASK_ENV=development
+   SECRET_KEY=your_secure_random_key_here
+   DATABASE_URI=postgresql://user:password@localhost:5432/sme_db
+   API_BEARER_TOKEN=your_auth_token
+   ```
+2. **Frontend API Configuration:**
+   Ensure your frontend `.env` points to the correct backend origin to prevent CORS vulnerabilities:
+   ```env
+   # Example .env (Frontend)
+   VITE_API_URL=http://localhost:5000/api
+   ```
+3. **Data Privacy:** Any uploaded PDF/CSV reports containing PII (Personally Identifiable Information) or sensitive corporate financials are processed in-memory or in ephemeral storage and should be configured to wipe automatically after extraction.
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+- Node.js (v18+)
+- Python (3.9+)
+
+### 1. Setup the Backend
+Navigate to the backend directory and set up the Python environment:
 ```bash
 cd backend
-pip install flask flask-cors pandas scikit-learn joblib pymongo pypdf2
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+pip install -r requirements.txt
+
+# Run the Flask Server
 python app.py
 ```
-*The server will start on `http://localhost:5000`.*
+*The backend will run on `http://localhost:5000`*
 
-### 3. Frontend Setup
-Navigate to the `frontend` directory, install the Node modules, and start the Vite development server:
+### 2. Setup the Frontend
+Open a new terminal, navigate to the frontend directory:
 ```bash
 cd frontend
 npm install
+
+# Start the Vite Development Server
 npm run dev
 ```
-*The application will launch on `http://localhost:5173/`.*
+*The frontend will be available at `http://localhost:5173`*
 
-## 📈 Usage Workflow
-1. Navigate to the **Annual Report Analysis** tab.
-2. Upload a sample corporate financial PDF (e.g., an IFRS USD Earnings Release).
-3. Watch as the intelligent parsing engine automatically builds the financial charts.
-4. Input any missing credit metrics (e.g., specific delinquencies).
-5. Click **Predict Risk** to process the data through the Machine Learning Normalization Layer and view the final AI Approval Probability.
+---
+
+## 🧠 Model Training Details
+The core Machine Learning model was trained on a highly imbalanced dataset of 50,000 SME records. 
+- **Preprocessing:** Features were scaled using `StandardScaler` and categorical variables were One-Hot Encoded.
+- **Selection:** We evaluated Logistic Regression, Support Vector Classifier (SVC), XGBoost, and Random Forest.
+- **Result:** Random Forest emerged as the winner, achieving an **85.19% Test Accuracy** and an impressive **AUC Score of 0.9292**, largely due to its ability to handle non-linear boundaries and class imbalances (`class_weight='balanced'`).
+
+---
+*Developed for intelligent, data-driven financial analytics.*
