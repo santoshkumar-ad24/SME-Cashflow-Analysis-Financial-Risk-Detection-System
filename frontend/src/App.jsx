@@ -6,7 +6,7 @@ import './App.css';
 
 // Pages
 import Home from './pages/Home';
-import Cashflow from './pages/Cashflow';
+
 import Predictor from './pages/Predictor';
 import ReportAnalysis from './pages/ReportAnalysis';
 
@@ -36,10 +36,6 @@ function App() {
               <Activity size={20} />
               <span>Model Analytics</span>
             </NavLink>
-            <NavLink to="/cashflow" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>
-              <CircleDollarSign size={20} />
-              <span>Cashflow</span>
-            </NavLink>
             <NavLink to="/predictor" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>
               <ShieldAlert size={20} />
               <span>Risk Predictor</span>
@@ -59,7 +55,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Navigate to="/home" replace />} />
             <Route path="/home" element={<Home />} />
-            <Route path="/cashflow" element={<Cashflow />} />
+
             <Route path="/predictor" element={<Predictor />} />
             <Route path="/report-analysis" element={<ReportAnalysis />} />
           </Routes>

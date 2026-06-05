@@ -25,14 +25,15 @@ const ReportAnalysis = () => {
   const [predictionResult, setPredictionResult] = useState(null);
   const [predicting, setPredicting] = useState(false);
 
-  // Mock Correlation Data for the Model Parameters
+  // Correlation Data for the Model Features
   const correlationData = [
-    { feature: 'Credit Score', corr: 0.85 },
-    { feature: 'Annual Income', corr: 0.65 },
-    { feature: 'Years Employed', corr: 0.45 },
-    { feature: 'Current Debt', corr: -0.75 },
-    { feature: 'Defaults', corr: -0.92 },
-    { feature: 'Delinquencies', corr: -0.68 }
+    { feature: 'Credit Score', corr: 0.82 },
+    { feature: 'Credit Risk Score', corr: -0.88 },
+    { feature: 'DTI Ratio', corr: -0.75 },
+    { feature: 'Credit History', corr: 0.60 },
+    { feature: 'Years Employed', corr: 0.55 },
+    { feature: 'Annual Income', corr: 0.70 },
+    { feature: 'Stability Score', corr: 0.78 }
   ];
 
   const handleDragOver = (e) => {
@@ -80,32 +81,9 @@ const ReportAnalysis = () => {
       setTimeout(() => {
         setExtractedData({
           totalAssets: 4500000,
-          netIncome: 850000,
-          eps: 3.45,
           annualIncome: 1200000,
           yearsEmployed: 10,
-          currentDebt: 300000,
-          quarterlyTrend: [
-            { quarter: 'Q1', revenue: 1000000, netIncome: 200000 },
-            { quarter: 'Q2', revenue: 1100000, netIncome: 210000 },
-            { quarter: 'Q3', revenue: 1150000, netIncome: 230000 },
-            { quarter: 'Q4', revenue: 1300000, netIncome: 250000 }
-          ],
-          revenueBreakdown: [
-            { name: 'Product Sales', value: 2500000 },
-            { name: 'Services', value: 1500000 },
-            { name: 'Licensing', value: 500000 }
-          ],
-          cashFlowStatement: [
-            { category: 'Operating', amount: 800000 },
-            { category: 'Investing', amount: -200000 },
-            { category: 'Financing', amount: -100000 }
-          ],
-          profitability: [
-            { category: 'Gross Margin', amount: 45 },
-            { category: 'Operating Margin', amount: 25 },
-            { category: 'Net Margin', amount: 15 }
-          ]
+          currentDebt: 300000
         });
         setLoading(false);
       }, 1500);
@@ -156,14 +134,32 @@ const ReportAnalysis = () => {
     return 'high';
   };
 
-  // Prepare Radar Chart Data comparing Extracted/Input vs Benchmark
+  // Derived ML Features
+  const dtiRatio = extractedData ? (extractedData.currentDebt / (extractedData.annualIncome || 1)) : 0;
+  const stabilityScore = extractedData ? (extractedData.annualIncome / (extractedData.currentDebt || 1)) : 0;
+  const creditRiskScore = creditMetrics.defaultsOnFile + creditMetrics.delinquencies + creditMetrics.derogatoryMarks;
+
+  // Prepare Radar Chart Data comparing Extracted/Input vs Benchmark for ML Features
   const radarData = extractedData ? [
-    { subject: 'Income Level', A: Math.min(100, (extractedData.annualIncome/2000000)*100), B: 60, fullMark: 100 },
-    { subject: 'Debt Mgmt', A: Math.max(0, 100 - (extractedData.currentDebt/500000)*100), B: 70, fullMark: 100 },
-    { subject: 'Credit Score', A: (creditMetrics.creditScore/850)*100, B: 80, fullMark: 100 },
-    { subject: 'Stability (Yrs)', A: Math.min(100, (extractedData.yearsEmployed/15)*100), B: 50, fullMark: 100 },
-    { subject: 'Asset Backing', A: Math.min(100, (extractedData.totalAssets/5000000)*100), B: 65, fullMark: 100 },
-    { subject: 'History Clean', A: Math.max(0, 100 - (creditMetrics.defaultsOnFile*20)), B: 80, fullMark: 100 },
+    { subject: 'Credit Score', A: (creditMetrics.creditScore/850)*100, B: 82, fullMark: 100 },
+    { subject: 'Credit History', A: Math.min(100, (creditMetrics.creditHistoryYears/15)*100), B: 50, fullMark: 100 },
+    { subject: 'Years Employed', A: Math.min(100, (extractedData.yearsEmployed/15)*100), B: 40, fullMark: 100 },
+    { subject: 'Income Level', A: Math.min(100, (extractedData.annualIncome/5000000)*100), B: 60, fullMark: 100 },
+    { subject: 'Stability Score', A: Math.min(100, (stabilityScore/10)*100), B: 45, fullMark: 100 },
+    { subject: 'Low DTI Ratio', A: Math.max(0, 100 - (dtiRatio*100)), B: 70, fullMark: 100 },
+    { subject: 'Low Credit Risk', A: Math.max(0, 100 - (creditRiskScore*20)), B: 80, fullMark: 100 },
+  ] : [];
+
+  const riskFactorsData = creditRiskScore === 0 ? 
+    [{ name: 'Clean History', value: 1 }] : 
+    [
+      { name: 'Defaults', value: creditMetrics.defaultsOnFile },
+      { name: 'Delinquencies', value: creditMetrics.delinquencies },
+      { name: 'Derogatory', value: creditMetrics.derogatoryMarks }
+    ];
+
+  const debtIncomeData = extractedData ? [
+    { name: 'Financials', Income: extractedData.annualIncome, Debt: extractedData.currentDebt }
   ] : [];
 
   return (
@@ -221,47 +217,48 @@ const ReportAnalysis = () => {
       {extractedData && (
         <div className="fade-in">
           
-          <div className="form-title" style={{marginTop: '20px'}}>Financial Health Overview</div>
+          <div className="form-title" style={{marginTop: '20px'}}>Model Features Overview</div>
           <div className="metrics-grid">
             <div className="metric-card" style={{ borderColor: 'var(--accent-1)' }}>
-              <div className="metric-title" style={{display:'flex', alignItems:'center', gap:'8px'}}><DollarSign size={18}/> Total Assets</div>
-              <div className="metric-value">{formatCurrency(extractedData.totalAssets)}</div>
+              <div className="metric-title" style={{display:'flex', alignItems:'center', gap:'8px'}}><DollarSign size={18}/> Annual Income</div>
+              <div className="metric-value">{formatCurrency(extractedData.annualIncome)}</div>
             </div>
             <div className="metric-card">
-              <div className="metric-title" style={{display:'flex', alignItems:'center', gap:'8px'}}><TrendingUp size={18}/> Net Income</div>
-              <div className="metric-value" style={{color: 'var(--success)'}}>{formatCurrency(extractedData.netIncome)}</div>
+              <div className="metric-title" style={{display:'flex', alignItems:'center', gap:'8px'}}><Activity size={18}/> Debt-to-Income (DTI)</div>
+              <div className="metric-value" style={{color: dtiRatio > 0.5 ? 'var(--error)' : 'var(--success)'}}>{(dtiRatio * 100).toFixed(1)}%</div>
             </div>
             <div className="metric-card">
-              <div className="metric-title" style={{display:'flex', alignItems:'center', gap:'8px'}}><Activity size={18}/> Earnings Per Share (EPS)</div>
-              <div className="metric-value">${extractedData.eps.toFixed(2)}</div>
+              <div className="metric-title" style={{display:'flex', alignItems:'center', gap:'8px'}}><TrendingUp size={18}/> Stability Score</div>
+              <div className="metric-value">{stabilityScore.toFixed(2)}</div>
             </div>
           </div>
 
           <div className="charts-grid" style={{marginTop: '24px'}}>
             <div className="chart-card fade-in" style={{gridColumn: '1 / -1'}}>
-              <div className="chart-title">Quarterly Revenue & Net Income Trend</div>
+              <div className="chart-title">Debt vs Income Profile</div>
               <ResponsiveContainer width="100%" height={300}>
-                <LineChart data={extractedData.quarterlyTrend} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
-                  <XAxis dataKey="quarter" stroke="var(--text-secondary)" tick={{fill: 'var(--text-secondary)'}} axisLine={{stroke: 'rgba(255,255,255,0.1)'}} tickLine={false} />
-                  <YAxis stroke="var(--text-secondary)" tick={{fill: 'var(--text-secondary)'}} axisLine={{stroke: 'rgba(255,255,255,0.1)'}} tickLine={false} tickFormatter={(value) => formatCurrency(value)} />
+                <BarChart data={debtIncomeData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }} layout="vertical">
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" horizontal={true} vertical={false} />
+                  <XAxis type="number" stroke="var(--text-secondary)" tick={{fill: 'var(--text-secondary)'}} axisLine={{stroke: 'rgba(255,255,255,0.1)'}} tickLine={false} tickFormatter={(value) => formatCurrency(value)} />
+                  <YAxis dataKey="name" type="category" stroke="var(--text-secondary)" tick={{fill: 'var(--text-secondary)'}} width={80} axisLine={{stroke: 'rgba(255,255,255,0.1)'}} tickLine={false} />
                   <RechartsTooltip 
+                    cursor={{fill: 'rgba(255,255,255,0.05)'}}
                     contentStyle={{ backgroundColor: 'var(--tooltip-bg)', border: '1px solid var(--border-color)', borderRadius: '12px', color: 'var(--text-primary)' }} 
                     formatter={(value) => formatCurrency(value)}
                   />
                   <Legend verticalAlign="top" height={36} iconType="circle"/>
-                  <Line type="monotone" dataKey="revenue" name="Revenue" stroke="var(--accent-1)" strokeWidth={3} dot={{ stroke: 'var(--accent-1)', strokeWidth: 2, fill: '#0f172a', r: 4 }} activeDot={{ r: 8, fill: 'var(--accent-1)' }} />
-                  <Line type="monotone" dataKey="netIncome" name="Net Income" stroke="var(--success)" strokeWidth={3} dot={{ stroke: 'var(--success)', strokeWidth: 2, fill: '#0f172a', r: 4 }} activeDot={{ r: 8, fill: 'var(--success)' }} />
-                </LineChart>
+                  <Bar dataKey="Income" name="Annual Income" fill="var(--success)" radius={[0, 4, 4, 0]} barSize={30} />
+                  <Bar dataKey="Debt" name="Current Debt" fill="var(--error)" radius={[0, 4, 4, 0]} barSize={30} />
+                </BarChart>
               </ResponsiveContainer>
             </div>
 
             <div className="chart-card fade-in">
-              <div className="chart-title">Estimated Revenue Breakdown</div>
+              <div className="chart-title">Credit Risk Breakdown</div>
               <ResponsiveContainer width="100%" height={300}>
                 <PieChart>
                   <Pie
-                    data={extractedData.revenueBreakdown}
+                    data={riskFactorsData}
                     cx="50%"
                     cy="50%"
                     innerRadius={60}
@@ -270,14 +267,12 @@ const ReportAnalysis = () => {
                     dataKey="value"
                     stroke="none"
                   >
-                    {extractedData.revenueBreakdown.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={PIE_COLORS[index % PIE_COLORS.length]} />
+                    {riskFactorsData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={creditRiskScore === 0 ? 'var(--success)' : BAR_COLORS[index % BAR_COLORS.length]} />
                     ))}
                   </Pie>
                   <RechartsTooltip 
                     contentStyle={{ backgroundColor: 'var(--tooltip-bg)', border: '1px solid var(--border-color)', borderRadius: '12px', color: 'var(--text-primary)' }} 
-                    formatter={(value) => formatCurrency(value)}
-                    itemStyle={{ color: 'var(--text-primary)' }}
                   />
                   <Legend verticalAlign="bottom" height={36} iconType="circle"/>
                 </PieChart>
